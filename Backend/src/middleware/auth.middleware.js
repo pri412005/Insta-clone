@@ -1,5 +1,4 @@
 import jwt from "jsonwebtoken";
-import AppError from "../utils/AppError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 const identifyUser = asyncHandler(async (req, res, next) => {

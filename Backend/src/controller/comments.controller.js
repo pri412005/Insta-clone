@@ -28,7 +28,7 @@ export const addComment = asyncHandler(async (req, res, next) => {
         .findById(comment._id)
         .populate("user", "username profileImage");
 
-    // apni hi post pe comment karne par notification mat banao
+
     if (post.user.toString() !== req.user.id) {
       const notification = await notificationModel.create({
         sender: req.user.id,
@@ -61,7 +61,6 @@ export const deleteComment = asyncHandler(async (req, res, next) => {
 
     await CommentModel.findByIdAndDelete(commentId);
 
-    // related notification bhi delete kar do
     await notificationModel.deleteOne({
       commentId: commentId,
       type: "comment"

@@ -11,7 +11,7 @@ const PostDetails = () => {
 
   const [post, setPost] = useState(null);
   const [showMenu, setShowMenu] = useState(false);
-  const [showModal, setShowModal] = useState(false); // 🔥 new
+  const [showModal, setShowModal] = useState(false); 
 
   const sliderRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);

@@ -138,7 +138,6 @@ export const toggleLikePost = asyncHandler(async (req, res, next) => {
 
     await likeModel.deleteOne({ _id: existingLike._id });
 
-    // unlike hone par purani like-notification delete kar do
     await notificationModel.deleteOne({
       sender: userId,
       receiver: post.user,
@@ -158,7 +157,6 @@ export const toggleLikePost = asyncHandler(async (req, res, next) => {
       post: postId,
     });
 
-    // apni hi post like karne par notification mat banao
     if (post.user.toString() !== userId) {
       const notification = await notificationModel.create({
         sender: userId,
@@ -226,7 +224,6 @@ export const toggleSavePost = asyncHandler(async (req, res) => {
 export const getExploreFeed = asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
-  // jin logo ko already follow kar rahe hain (accepted status)
   const following = await followModel.find({
     follower: userId,
     status: "accepted"
@@ -245,7 +242,6 @@ export const getExploreFeed = asyncHandler(async (req, res) => {
     { $sample: { size: 30 } }
   ]);
 
-  // populate manually since aggregate doesn't support .populate()
   const populatedPosts = await postModel.populate(explorePosts, {
     path: "user",
     select: "username profileImage"

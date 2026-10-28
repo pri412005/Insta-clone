@@ -1,10 +1,10 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import AppError from "../utils/AppError.js"
 
-// STEP 1: AI se suggestion mangwana
+
 export const getAIStorySuggestion = asyncHandler(async (req, res, next) => {
     const { prompt } = req.body;
-    const imageUrl = req.file?.path; // agar multer/imagekit middleware se image upload hui
+    const imageUrl = req.file?.path; 
 
     if (!imageUrl) {
         return next(new AppError("Image is required", 400));
@@ -13,7 +13,6 @@ export const getAIStorySuggestion = asyncHandler(async (req, res, next) => {
         return next(new AppError("Prompt is required", 400));
     }
 
-    // Claude API ko call karna - image + prompt bhejna
     const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -49,7 +48,6 @@ export const getAIStorySuggestion = asyncHandler(async (req, res, next) => {
 
     const data = await aiResponse.json();
 
-    // AI ka reply text nikal ke JSON mein parse karna
     let suggestion;
     try {
         const rawText = data.content[0].text.replace(/```json|```/g, "").trim();
@@ -58,7 +56,6 @@ export const getAIStorySuggestion = asyncHandler(async (req, res, next) => {
         return next(new AppError("AI response could not be processed", 500));
     }
 
-    // Mood tags ke basis pe music dhoondna
     const matchedMusic = await Music.findOne({
         moodTags: { $in: suggestion.moodTags }
     });
@@ -78,10 +75,9 @@ export const getAIStorySuggestion = asyncHandler(async (req, res, next) => {
     });
 });
 
-// STEP 2: "Done" click pe - suggestion ko final story banake save karna
 export const saveStoryFromSuggestion = asyncHandler(async (req, res, next) => {
     const { imageUrl, textOverlay, emojis, music } = req.body;
-    const userId = req.user._id; // identifyUser middleware se aayega
+    const userId = req.user._id;
 
     if (!imageUrl) {
         return next(new AppError("Image is required", 400));
@@ -103,7 +99,6 @@ export const saveStoryFromSuggestion = asyncHandler(async (req, res, next) => {
     });
 });
 
-// Custom story ke liye alag route - manual save (isAIGenerated: false)
 export const saveCustomStory = asyncHandler(async (req, res, next) => {
     const { imageUrl, textOverlay, emojis, music } = req.body;
     const userId = req.user._id;

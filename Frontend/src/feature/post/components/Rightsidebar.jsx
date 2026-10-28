@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "../style/rightsidebar.scss";
-import { useAuth } from "../../auth/hook/useAuth"; // adjust path
+import { useAuth } from "../../auth/hook/useAuth"; 
 import { useNavigate } from "react-router-dom";
 import { usePost } from "../hook/usePost";
 import { usefollow } from "../../follow/hook/usefollow";
@@ -24,7 +24,6 @@ const Rightsidebar = () => {
   return (
     <aside className="right-sidebar">
 
-      {/* Current User */}
       <div className="current-user card">
         <div className="user-info">
           <img

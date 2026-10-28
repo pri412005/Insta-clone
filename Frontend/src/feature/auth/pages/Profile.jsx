@@ -34,7 +34,6 @@ const Profile = () => {
         />
       ) : (
         <>
-          {/* PROFILE INFO */}
           <div className="profile-view">
             <div className="profile-pic-section">
               <img
@@ -63,7 +62,6 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* POSTS SECTION */}
 
           <div className="posts-section">
             {post?.length > 0 ? (
@@ -76,7 +74,6 @@ const Profile = () => {
                   >
                     <img src={p.images?.[0]} alt="post" />
 
-                    {/* FIXED overlay */}
                     {p.images?.length > 1 && (
                       <div className="overlay">
                         <span>1 / {p.images.length}</span>

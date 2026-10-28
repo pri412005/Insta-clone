@@ -1,127 +1,235 @@
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 32px;
-    background: #fafafa;
-    border-bottom: 1px solid #e5e7eb;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
+// ===== Variables =====
+$bg: #ffffff;
+$text: #262626;
+$muted: #737373;
+$border: #dbdbdb;
+$hover-bg: #f5f5f5;
+$primary: #0095f6;
+$danger: #ed4956;
+$navbar-height: 60px;
+$radius: 10px;
+$transition: 0.2s ease;
 
-/* logo */
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    font-size: 20px;
-    font-weight: 700;
-    color: #374460;
-}
-
-.logo-img {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-/* search */
-
-.search-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #f3f4f6;
-    padding: 8px 14px;
-    border-radius: 10px;
-    width: 360px;
-}
-
-.search-icon {
-    font-size: 18px;
-    color: #6b7280;
-}
-
-.search-box input {
-    border: none;
-    outline: none;
-    background: transparent;
-    width: 100%;
-    font-size: 14px;
-}
-
-/* actions */
-
-.nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.icon-btn {
-    border: none;
-    background: transparent;
-    font-size: 22px;
-    cursor: pointer;
-    color: #374151;
-    padding: 8px;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.icon-btn:hover {
-    background: #f3f4f6;
-    color: #2563eb;
-}
-
-.profile-btn {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  border: none;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: white;
+@mixin flex-center {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  padding: 0;
 }
 
-.profile-btn svg {
-  width: 20px;
-  height: 20px;
-}
+// ===== Navbar =====
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: $navbar-height;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $bg;
+  border-bottom: 1px solid $border;
 
-.notification-btn {
-    position: relative;
-}
-
-.notification-badge {
-    position: absolute;
-
-    top: -4px;
-    right: -4px;
-
-    min-width: 18px;
-    height: 18px;
-
-    border-radius: 50%;
-
-    background-color: hotpink;
-    color: white;
-
-    font-size: 11px;
-    font-weight: 600;
-
+  // ----- Logo -----
+  .logo {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
 
-    padding: 0 4px;
+    .logo-img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    span {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: $text;
+    }
+  }
+
+  // ----- Right side actions -----
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  // ----- Icon buttons -----
+  .icon-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    @include flex-center;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: $text;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background $transition, color $transition, transform $transition;
+
+    &:hover {
+      background: $hover-bg;
+      color: $primary;
+    }
+
+    &:active {
+      transform: scale(0.92);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $primary;
+      outline-offset: 2px;
+    }
+  }
+
+  // ----- Notification badge -----
+  .notification-btn {
+    .notification-badge {
+      position: absolute;
+      top: 4px;
+      right: 2px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      @include flex-center;
+      background: $danger;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      line-height: 1;
+      border-radius: 999px;
+      border: 2px solid $bg;
+    }
+  }
+
+  // ----- Profile menu -----
+  .profile-menu {
+    position: relative;
+    margin-left: 4px;
+
+    .profile-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 42px;
+      padding: 0 12px;
+      background: $hover-bg;
+      border: 1px solid $border;
+      border-radius: 999px;
+      color: $text;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background $transition, border-color $transition;
+
+      &:hover {
+        background: darken($hover-bg, 3%);
+        border-color: darken($border, 8%);
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primary;
+        outline-offset: 2px;
+      }
+
+      svg:last-child {
+        font-size: 0.8rem;
+        color: $muted;
+      }
+    }
+
+    // ----- Dropdown -----
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 180px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: $bg;
+      border: 1px solid $border;
+      border-radius: $radius;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      animation: dropdownFade 0.15s ease;
+
+      button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 12px;
+        background: transparent;
+        border: none;
+        border-radius: 8px;
+        color: $text;
+        font-size: 0.95rem;
+        text-align: left;
+        cursor: pointer;
+        transition: background $transition;
+
+        svg {
+          font-size: 1.1rem;
+          flex-shrink: 0;
+        }
+
+        &:hover:not(:disabled) {
+          background: $hover-bg;
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        // Logout button (last one) in red
+        &:last-child {
+          color: $danger;
+        }
+      }
+    }
+  }
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ===== Responsive =====
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 12px;
+
+    .logo span {
+      font-size: 1.15rem;
+    }
+
+    .nav-actions {
+      gap: 2px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      font-size: 1.25rem;
+    }
+
+    .profile-menu .profile-btn {
+      height: 38px;
+      padding: 0 10px;
+    }
+  }
 }

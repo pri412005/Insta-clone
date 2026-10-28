@@ -41,8 +41,6 @@ const UserProfilePage = () => {
     return (
         <div className="up-wrapper">
             <PageHeader />
-
-            {/* LOADER */}
             {
                 loading && (
                     <div className="up-loader">
@@ -51,7 +49,6 @@ const UserProfilePage = () => {
                 )
             }
 
-            {/* USER NOT FOUND */}
             {
                 !loading && !profileUser && (
                     <p className="up-loading-text">
@@ -60,13 +57,11 @@ const UserProfilePage = () => {
                 )
             }
 
-            {/* PROFILE */}
             {
                 profileUser && (
 
                     <div className="up-container">
 
-                        {/* HEADER */}
                         <div className="up-header">
 
                             <img
@@ -112,7 +107,6 @@ const UserProfilePage = () => {
 
                         </div>
 
-                        {/* BIO */}
                         <div className="up-bio-box">
 
                             <h3>Bio</h3>
@@ -123,7 +117,6 @@ const UserProfilePage = () => {
 
                         </div>
 
-                        {/* POSTS */}
                         <div className="up-post-grid">
 
                             {

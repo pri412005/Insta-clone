@@ -10,26 +10,23 @@ export const toggleFollowController = asyncHandler(async (req, res) => {
     const follower = req.user.id;
     const followee = req.params.userid;
 
-    // Prevent self-follow
     if (follower === followee) {
         throw new AppError("You cannot follow yourself", 400);
     }
 
-    // Check whether target user exists
     const userExists = await authModel.findById(followee);
 
     if (!userExists) {
         throw new AppError("User does not exist", 404);
     }
 
-    // Check existing follow relationship
     const existingFollow = await followModel.findOne({
         follower,
         followee
     });
 
     if (existingFollow) {
-        // Pending request ko dobara click karne par preserve karo
+
         if (existingFollow.status === "pending") {
             return res.status(200).json({
                 success: true,
@@ -38,7 +35,6 @@ export const toggleFollowController = asyncHandler(async (req, res) => {
             });
         }
 
-        // Accepted relationship ko remove karke unfollow karo
         await followModel.findByIdAndDelete(existingFollow._id);
 
         return res.status(200).json({
@@ -48,17 +44,14 @@ export const toggleFollowController = asyncHandler(async (req, res) => {
         });
     }
 
-    // Decide status based on account privacy
     const status = userExists.isPrivate ? "pending" : "accepted";
 
-    // Create follow relationship
     const follow = await followModel.create({
         follower,
         followee,
         status
     });
 
-    // Create appropriate notification
     const notification = await notificationModel.create({
         sender: follower,
         receiver: followee,
@@ -82,8 +75,6 @@ export const toggleFollowController = asyncHandler(async (req, res) => {
 });
 export const acceptFollowRequest = asyncHandler(async (req, res) => {
     const followId = req.params.followid;
-
-
     const followRequest = await followModel.findById(followId);
     if (!followRequest) {
         throw new AppError("Follow request not found", 404);
@@ -93,13 +84,16 @@ export const acceptFollowRequest = asyncHandler(async (req, res) => {
         throw new AppError("You are not allowed to accept this request", 403);
 
     }
-    console.log("Follow ID:", req.params.followid);
-    console.log("Follow document:", followRequest);
     if (followRequest.status === "accepted") {
         throw new AppError("Already accepted", 400);
     }
     followRequest.status = "accepted";
     await followRequest.save();
+    await notificationModel.deleteMany({
+        followId: followRequest._id,
+        type: "follow_request",
+        receiver: req.user.id
+    });
 
     res.status(200).json({
         success: true,
@@ -121,6 +115,11 @@ export const rejectFollowRequest = asyncHandler(async (req, res) => {
 
     followRequest.status = "rejected";
     await followRequest.save();
+    await notificationModel.deleteMany({
+        followId: followRequest._id,
+        type: "follow_request",
+        receiver: req.user.id
+    });
 
     res.status(200).json({
         success: true,

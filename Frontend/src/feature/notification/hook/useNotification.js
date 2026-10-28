@@ -49,7 +49,7 @@ export const useNotification = () => {
         } catch (err) {
 
             console.log(err);
-
+            throw err;
         }
 
     }
@@ -57,12 +57,7 @@ export const useNotification = () => {
 
         socket.on("notification", (data) => {
 
-            console.log("🔥 New notification received:", data);
-
-            // 1. UI update instantly
             setNotifications(prev => [data, ...prev]);
-
-            // 2. badge update bhi karna hai
             setUnreadCount(prev => prev + 1);
 
         });

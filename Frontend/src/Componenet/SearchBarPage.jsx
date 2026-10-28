@@ -10,20 +10,17 @@ const SearchBarPage = () => {
     const [search, setSearch] = useState("");
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
-    
-    // Yeh ref check rakhega ki pichli baar kya API request gayi thi
+
     const activeSearchText = useRef(""); 
     const navigate = useNavigate();
 
-    // Fetch users
     const handleGetAllUsers = async (searchText = "", page = 1, limit = 10) => {
         try {
             setLoading(true);
-            activeSearchText.current = searchText; // Current search ko lock karo
+            activeSearchText.current = searchText; 
 
             const data = await getAllUsersApi(searchText, page, limit);
-
-            // Race condition check: Agar user ne naya type kar diya hai aur purani API abhi aayi hai, toh use ignore karo
+   
             if (activeSearchText.current === searchText) {
                 if (data?.users) {
                     setUsers(data.users);
@@ -34,16 +31,14 @@ const SearchBarPage = () => {
         } catch (error) {
             console.log(error);
         } finally {
-            // Sirf tabhi loading band karo agar hum usi active search par hain
             if (activeSearchText.current === searchText) {
                 setLoading(false);
             }
         }
     };
 
-    // Debounce search logic with seamless data retaining
     useEffect(() => {
-        // Agar input box poora khali ho jaye, toh turant list clear karo bina delay ke
+
         if (!search.trim()) {
             setUsers([]);
             setLoading(false);
@@ -53,7 +48,7 @@ const SearchBarPage = () => {
 
         const delay = setTimeout(() => {
             handleGetAllUsers(search.trim());
-        }, 350); // 350ms feels extremely fast and lag-free
+        }, 350);
 
         return () => clearTimeout(delay);
     }, [search]);
@@ -61,7 +56,7 @@ const SearchBarPage = () => {
     return (
         <div className="search-page">
           <PageHeader/>
-            {/* Header */}
+
             <div className="search-header">
                 <h2>Search</h2>
 
@@ -82,12 +77,10 @@ const SearchBarPage = () => {
                 </div>
             </div>
 
-            {/* Empty state (Blink proof: Sirf tabhi dikhega jab loading false ho AUR user ne kuch type kiya ho) */}
             {!loading && search.trim() && users.length === 0 && (
                 <p className="empty-text">No results found.</p>
             )}
 
-            {/* Results Grid - Ab ye har keypress par gayab (blink) nahi hoga */}
             <div className="search-results" style={{ opacity: loading ? 0.7 : 1, transition: 'opacity 0.15s ease' }}>
                 {users.map((user) => (
                     <div

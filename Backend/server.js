@@ -9,12 +9,10 @@ import { Server } from "socket.io";
 import app from "./src/app.js"
 import connectToDB from "./src/config/database.js";
 
-// HTTP server
 const server = http.createServer(app);
 
 connectToDB()
 
-// Socket server
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173",
@@ -22,7 +20,6 @@ const io = new Server(server, {
     }
 });
 
-// Socket logic
 io.on("connection", (socket) => {
 
     socket.on("join", (userId) => {
@@ -35,10 +32,7 @@ io.on("connection", (socket) => {
     });
 });
 
-// ONLY ONE EXPORT
 export { io, server };
-
-// Server listen
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {

@@ -151,7 +151,7 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
             totalUsers: 0,
             totalPages: 0,
             currentPage: Number(page),
-            users: [] // Turant khali array return karo bina blink space ke
+            users: [] 
         });
     }
 
@@ -164,14 +164,14 @@ export const getAllUsers = asyncHandler(async (req, res, next) => {
         $or: [
             {
                 username: {
-                    $regex: search.trim(), // spaces clean karke search karo
+                    $regex: search.trim(), 
                     $options: "i"
                 }
             }
         ]
     };
 
-    // Ek sath dono operations run karo taaki response time fast ho jaye (No lag)
+  
     const [users, totalUsers] = await Promise.all([
         authModel.find(query).select("-password").skip(skip).limit(limitNumber).lean(),
         authModel.countDocuments(query)
@@ -199,18 +199,14 @@ export const getUserById = asyncHandler(async (req, res) => {
         });
     }
 
-    // user posts
     const posts = await PostModel.find({
         user: req.params.id
     });
 
-    // followers count
     const followersCount = await followModel.countDocuments({
         followee: req.params.id,
         status: "accepted"
     });
-
-    // following count
     const followingCount = await followModel.countDocuments({
         follower: req.params.id,
         status: "accepted"

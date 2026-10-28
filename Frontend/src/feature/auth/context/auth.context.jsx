@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
     const [search, setSearch] = useState("")
 
 
-
     return (
 
         <AuthContext.Provider

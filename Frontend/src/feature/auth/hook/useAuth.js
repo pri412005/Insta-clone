@@ -37,8 +37,6 @@ export const useAuth = () => {
 
     } = useContext(AuthContext)
 
-    // CURRENT USER
-
     const handlegetCurrentUser = async () => {
 
         try {
@@ -61,8 +59,6 @@ export const useAuth = () => {
 
     }
 
-    // REGISTER
-
     const handleRegister = async (formData) => {
 
         return handleApi({
@@ -78,8 +74,6 @@ export const useAuth = () => {
         })
 
     }
-
-    // VERIFY USER
 
     const handleVerifyUser = async (formData) => {
 
@@ -100,8 +94,6 @@ export const useAuth = () => {
         })
 
     }
-
-    // LOGIN
 
     const handleLogin = async (formData) => {
 
@@ -125,8 +117,6 @@ export const useAuth = () => {
 
     }
 
-    // LOGOUT
-
     const handleLogout = async () => {
 
         return handleApi({
@@ -144,8 +134,6 @@ export const useAuth = () => {
         })
 
     }
-
-    // UPDATE PROFILE
 
     const handleUpdateProfile = async (formData) => {
 
@@ -168,8 +156,6 @@ export const useAuth = () => {
         })
 
     }
-
-    // GET USER PROFILE
 
     const handleGetUserById = async (id) => {
 

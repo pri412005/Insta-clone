@@ -168,7 +168,6 @@ const PostCard = ({
 
       </div>
 
-      {/* DELETE MODAL */}
 
       {
         showDeleteModal && (
@@ -218,7 +217,6 @@ const PostCard = ({
         )
       }
 
-      {/* COMMENTS MODAL */}
 
       {
         showComments && (
