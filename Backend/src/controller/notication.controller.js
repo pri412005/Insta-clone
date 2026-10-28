@@ -1,6 +1,6 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import notificationModel from "../model/notification.model.js";
-import { io } from "../../server.js"; 
+ 
 
 export const getNotifications = asyncHandler(async (req, res) => {
 

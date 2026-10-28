@@ -5,10 +5,9 @@ const followRoutes = express.Router()
 
 
 followRoutes.post("/toggle/:userid", identifyUser, toggleFollowController)
-followRoutes.post("/accept/:followid",identifyUser, acceptFollowRequest)
-followRoutes.post("/reject/:followid", rejectFollowRequest)
+followRoutes.patch("/accept/:followid",identifyUser, acceptFollowRequest)
+followRoutes.patch("/reject/:followid", identifyUser, rejectFollowRequest)
 followRoutes.get("/requests", identifyUser, getPendingRequests)
 followRoutes.get("/stats", identifyUser, getFollowStats);
-
 
 export default followRoutes;

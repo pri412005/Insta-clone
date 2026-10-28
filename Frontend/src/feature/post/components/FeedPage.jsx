@@ -1,4 +1,3 @@
-import StoryFeed from "../../story/pages/StoryFeed";
 import PostCard from "../components/PostCard";
 import { usePost } from "../hook/usePost";
 import '../style/feed.scss'
@@ -17,7 +16,6 @@ const FeedPage = () => {
   }
   return (
     <>
-      <StoryFeed />
       <main className="feed-page">
         <div className="feed-container">
 

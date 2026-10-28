@@ -1,19 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../hook/useNotification.js";
 import "../style/notification.scss";
 import PageHeader from "../../../Componenet/Pageheader";
+import { usefollow } from "../../follow/hook/usefollow.js";
 
 const FollowNotificationPage = () => {
 
     const navigate = useNavigate();
+    const [processingId, setProcessingId] = useState(null);
+    const [toast, setToast] = useState(null);
+
 
     const {
         notifications,
+        setNotifications,
         handleGetNotifications,
         handleGetUnreadCount,
         handleMarkAllAsRead
     } = useNotification();
+
+    const { handleAcceptRequest,
+        handleRejectRequest } = usefollow()
 
     useEffect(() => {
 
@@ -26,6 +34,82 @@ const FollowNotificationPage = () => {
         init();
 
     }, []);
+    useEffect(() => {
+        if (!toast) return;
+
+        const timer = setTimeout(() => {
+            setToast(null);
+        }, 3000);
+
+        return () => clearTimeout(timer);
+    }, [toast]);
+    const handleAccept = async (e, item) => {
+        e.stopPropagation();
+
+        if (!item.followId) {
+            setToast({
+                type: "error",
+                message: "This follow request is invalid or expired."
+            });
+            return;
+        }
+        setProcessingId(item._id);
+
+        try {
+            await handleAcceptRequest(item.followId);
+
+            setNotifications((prev) =>
+                prev.filter((notification) => notification._id !== item._id)
+            );
+            setToast({
+                type: "success",
+                message: "Follow request accepted"
+            });
+
+        } catch (err) {
+            setToast({
+                type: "error",
+                message: err.response?.data?.message ||
+                    "Could not accept the follow request."
+            });
+
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleReject = async (e, item) => {
+        e.stopPropagation();
+        if (!item.followId) {
+            setToast({
+                type: "error",
+                message: "This follow request is invalid or expired."
+            });
+            return;
+        }
+        setProcessingId(item._id);
+
+
+        try {
+            await handleRejectRequest(item.followId);
+
+            setNotifications((prev) =>
+                prev.filter((notification) => notification._id !== item._id)
+            );
+            setToast({
+                type: "success",
+                message: "Follow request rejected"
+            });
+
+        } catch (err) {
+            setToast({
+                type: "error",
+                message: "Could not reject the follow request. Please try again."
+            });
+        } finally {
+            setProcessingId(null);
+        }
+    };
 
     const formatTimestamp = (dateString) => {
         if (!dateString) return "";
@@ -53,6 +137,8 @@ const FollowNotificationPage = () => {
                 return "liked your post.";
             case "comment":
                 return "commented on your post.";
+            case "follow_request":
+                return "requested to follow you.";
             default:
                 return "sent a notification.";
         }
@@ -78,6 +164,21 @@ const FollowNotificationPage = () => {
                         <h2>Notifications</h2>
                     </div>
                 </div>
+                {toast && (
+                    <div className={`notification-toast ${toast.type}`}>
+                        <span>
+                            {toast.type === "success" ? "✓" : "!"}
+                        </span>
+                        <p>{toast.message}</p>
+                        <button
+                            type="button"
+                            onClick={() => setToast(null)}
+                            aria-label="Close notification"
+                        >
+                            ×
+                        </button>
+                    </div>
+                )}
 
                 <div className="notification-card-wrapper">
 
@@ -120,6 +221,24 @@ const FollowNotificationPage = () => {
 
                                         </div>
                                     </div>
+                                    {item.type === "follow_request" && (
+                                        <div className="follow-request-actions">
+                                            <button
+                                                type="button"
+                                                disabled={processingId === item._id}
+                                                onClick={(e) => handleAccept(e, item)}
+                                            >
+                                                {processingId === item._id ? "Processing..." : "Accept"}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                disabled={processingId === item._id}
+                                                onClick={(e) => handleReject(e, item)}
+                                            >
+                                                {processingId === item._id ? "Processing..." : "Reject"}
+                                            </button>
+                                        </div>
+                                    )}
 
                                 </div>
                             </div>

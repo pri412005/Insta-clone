@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSearch } from "react-icons/fi";
-
 import FormGroup from "./FormGroup";
 import { getAllUsersApi } from "../feature/auth/services/auth.api";
 import PageHeader from "../Componenet/Pageheader"
-
 import "../feature/auth/style/searchBarPage.scss";
 
 const SearchBarPage = () => {

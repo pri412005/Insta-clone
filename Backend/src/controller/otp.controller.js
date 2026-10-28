@@ -21,20 +21,20 @@ export const sendOTP = async (email, username, password) => {
 
         const hashedOTP = await bcrypt.hash(otp, 10);
         password: password
-        const existing = await redis.get(`otp:${email}`);
+        const existing = await redis.get(`insta:otp:${email}`);
         if (existing) {
             throw new AppError("Please wait before requesting another OTP", 400);
         }
 
         await redis.set(
-            `otp:${email}`,
+            `insta:otp:${email}`,
             JSON.stringify({
                 otp: hashedOTP,
                 username,
                 password
             }),
             "EX",
-            300 
+            300
         );
 
         await sendEmail({
@@ -52,10 +52,10 @@ export const sendOTP = async (email, username, password) => {
 };
 export const verifyOTPAndRegister = asyncHandler(async (req, res, next) => {
     const { email, otp } = req.body;
-    const data = await redis.get(`otp:${email}`);
+    const data = await redis.get(`insta:otp:${email}`);
 
     if (!data) {
-        await redis.del(`otp_attempts:${email}`);
+        await redis.del(`insta:otp_attempts:${email}`);
         return next(new AppError("OTP expired", 400));
     }
     const parsedData = JSON.parse(data);
@@ -67,10 +67,10 @@ export const verifyOTPAndRegister = asyncHandler(async (req, res, next) => {
         hashedOTP
     );
     if (!isValid) {
-        let attempts = await redis.get(`otp_attempts:${email}`) || 0;
+        let attempts = await redis.get(`insta:otp_attempts:${email}`) || 0;
         attempts = Number(attempts) + 1;
 
-        await redis.set(`otp_attempts:${email}`, attempts, "EX", 300);
+        await redis.set(`insta:otp_attempts:${email}`, attempts, "EX", 120);
 
         if (attempts >= 5) {
             return next(new AppError("Too many attempts. Try again later.", 429));
@@ -78,7 +78,7 @@ export const verifyOTPAndRegister = asyncHandler(async (req, res, next) => {
 
         return next(new AppError("Invalid OTP", 400));
     }
-    await redis.del(`otp_attempts:${email}`);
+    await redis.del(`insta:otp_attempts:${email}`);
 
     const existingUser = await authModel.findOne({ email });
 
@@ -92,7 +92,7 @@ export const verifyOTPAndRegister = asyncHandler(async (req, res, next) => {
         isVerified: true
     });
 
-    await redis.del(`otp:${email}`);
+    await redis.del(`insta:otp:${email}`);
 
     await sendEmail({
         to: user.email,

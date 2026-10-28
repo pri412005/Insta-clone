@@ -68,12 +68,13 @@ export const useNotification = () => {
         });
 
         return () => {
-            socket.off("notification");
+            socket.off("newNotification");
         };
 
     }, []);
     return {
         notifications,
+        setNotifications,
         handleGetNotifications,
         unreadCount,
         setUnreadCount,

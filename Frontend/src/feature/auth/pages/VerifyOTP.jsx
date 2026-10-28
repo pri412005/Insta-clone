@@ -24,7 +24,7 @@ const VerifyOTP = () => {
     async function handleSubmit(e) {
         e.preventDefault()
 
-        submit(
+        await submit(
             { email, otp: otp.trim() },
             (data) => {
                 try {

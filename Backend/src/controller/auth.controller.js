@@ -21,10 +21,12 @@ export const sendOTPForRegistration = asyncHandler(async (req, res, next) => {
     if (!email || !username || !password) {
         return next(new AppError("All fields are required", 400));
     }
-
-  
-    
-
+    const existingUser = await authModel.findOne({
+        $or: [
+            { email: email },
+            { username: username }
+        ]
+    })
     if (existingUser) {
         return next(new AppError(
             existingUser.email === email ? "Email already exists" : "Username already exists",
@@ -78,7 +80,12 @@ export const logoutController = asyncHandler(async (req, res) => {
     const token = req.cookies.token;
     res.clearCookie("token");
 
-    await redis.set(`personal:blacklist:${token}`, Date.now().toString(), "EX", 60 * 60);
+    await redis.set(
+        `insta:personal:blacklist:${token}`,
+        Date.now().toString(),
+        "EX",
+        60 * 60
+    );
     res.status(200).json({ message: "Logout successfully" });
 });
 export const getCurrentUser = asyncHandler(async (req, res, next) => {
@@ -99,14 +106,19 @@ export const getCurrentUser = asyncHandler(async (req, res, next) => {
 });
 export const updateProfile = asyncHandler(async (req, res, next) => {
     const userId = req.user.id;
-    const { username, bio } = req.body;
+    const { username, bio, isPrivate } = req.body;
     const file = req.file;
+
 
     const user = await authModel.findById(userId);
     if (!user) return next(new AppError("User not found", 404));
 
     user.username = username || user.username;
     user.bio = bio || user.bio;
+    if (isPrivate !== undefined) {
+        user.isPrivate = isPrivate === true || isPrivate === false ? isPrivate : user.isPrivate;
+    }
+
 
     if (file) {
         try {
@@ -132,8 +144,6 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
 export const getAllUsers = asyncHandler(async (req, res, next) => {
     const { search = "", page = 1, limit = 10 } = req.query;
 
-    // OPTIMIZATION: Agar search string bilkul khali hai (bina spaces ke), 
-    // toh database query chalane ki zarurat hi nahi hai, instant empty array bhej do.
     if (!search.trim()) {
         return res.status(200).json({
             success: true,

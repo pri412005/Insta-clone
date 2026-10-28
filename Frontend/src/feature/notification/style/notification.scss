@@ -1,136 +1,309 @@
-// ============================================
-// Notifications Page
-// ============================================
+// ===== Variables =====
+$bg-page: #fafafa;
+$bg-card: #ffffff;
+$border-color: #dbdbdb;
+$text-primary: #262626;
+$text-secondary: #8e8e8e;
+$primary: #0095f6;
+$primary-hover: #1877f2;
+$danger: #ed4956;
+$success: #2ecc71;
+$radius: 12px;
+$transition: all 0.2s ease;
 
-$notif-bg: #ffffff;
-$notif-border: #efefef;
-$notif-hover: #fafafa;
-$notif-text-primary: #262626;
-$notif-text-secondary: #8e8e8e;
-$notif-unread-dot: #0095f6;
+// ===== Mixins =====
+@mixin flex($direction: row, $align: center, $justify: flex-start) {
+  display: flex;
+  flex-direction: $direction;
+  align-items: $align;
+  justify-content: $justify;
+}
 
+// ===== Page =====
 .notification-page {
-    max-width: 600px;
+  min-height: 100vh;
+  background-color: $bg-page;
+  color: $text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  .notification-container {
+    position: relative;
+    max-width: 640px;
     margin: 0 auto;
-    background: $notif-bg;
-    min-height: 100vh;
-}
+    padding: 24px 16px 48px;
 
-.notification-container {
-    padding: 0 0 40px;
-}
+    // ===== Header =====
+    .notification-header {
+      margin-bottom: 20px;
 
-.notification-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 16px 12px;
-    border-bottom: 1px solid $notif-border;
+      .header-title-area {
+        @include flex(row, center, space-between);
+        padding-bottom: 12px;
+        border-bottom: 1px solid $border-color;
 
-    .header-title-area {
         h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: $notif-text-primary;
-            margin: 0;
+          margin: 0;
+          font-size: 24px;
+          font-weight: 700;
+          letter-spacing: -0.3px;
         }
-    }
-}
-
-.notification-card-wrapper {
-    display: flex;
-    flex-direction: column;
-}
-
-.notification-row {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    cursor: pointer;
-    transition: background 0.15s ease;
-    border-bottom: 1px solid $notif-border;
-
-    &:hover {
-        background: $notif-hover;
+      }
     }
 
-    &:last-child {
-        border-bottom: none;
-    }
-}
+    // ===== Toast =====
+    .notification-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      min-width: 260px;
+      max-width: 360px;
+      padding: 12px 14px;
+      @include flex(row, center, flex-start);
+      gap: 10px;
+      background: $bg-card;
+      border-radius: 10px;
+      border-left: 4px solid $primary;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      animation: toast-slide-in 0.3s ease;
 
-.notification-meta {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-}
-
-.avatar-container {
-    flex-shrink: 0;
-
-    .user-avatar {
-        width: 44px;
-        height: 44px;
+      > span {
+        @include flex(row, center, center);
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
-        object-fit: cover;
-        background: #efefef;
-    }
-}
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        background: $primary;
+      }
 
-.text-container {
-    flex: 1;
-    min-width: 0;
-}
-
-.text-content {
-    font-size: 14px;
-    line-height: 1.4;
-    color: $notif-text-primary;
-    overflow-wrap: break-word;
-
-    .user-name {
-        font-weight: 600;
-    }
-
-    .activity-text {
-        color: $notif-text-primary;
-    }
-
-    .time-stamp {
-        display: block;
-        margin-top: 2px;
-        font-size: 12px;
-        color: $notif-text-secondary;
-    }
-}
-
-.notification-empty {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 80px 20px;
-
-    p {
-        font-size: 15px;
-        color: $notif-text-secondary;
+      > p {
+        flex: 1;
         margin: 0;
+        font-size: 14px;
+        line-height: 1.4;
+        color: $text-primary;
+      }
+
+      > button {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        font-size: 20px;
+        line-height: 1;
+        color: $text-secondary;
+        cursor: pointer;
+        border-radius: 50%;
+        transition: $transition;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.06);
+          color: $text-primary;
+        }
+      }
+
+      &.success {
+        border-left-color: $success;
+
+        > span {
+          background: $success;
+        }
+      }
+
+      &.error {
+        border-left-color: $danger;
+
+        > span {
+          background: $danger;
+        }
+      }
     }
+
+    // ===== Card wrapper =====
+    .notification-card-wrapper {
+      background: $bg-card;
+      border: 1px solid $border-color;
+      border-radius: $radius;
+      overflow: hidden;
+
+      // ===== Empty state =====
+      .notification-empty {
+        @include flex(column, center, center);
+        padding: 60px 20px;
+        text-align: center;
+
+        p {
+          margin: 0;
+          font-size: 15px;
+          color: $text-secondary;
+        }
+      }
+
+      // ===== Row =====
+      .notification-row {
+        padding: 12px 16px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid #efefef;
+        }
+
+        &:hover {
+          background-color: #f5f5f5;
+        }
+
+        &:active {
+          background-color: #efefef;
+        }
+
+        .notification-meta {
+          @include flex(row, center, flex-start);
+          gap: 12px;
+
+          .avatar-container {
+            flex-shrink: 0;
+
+            .user-avatar {
+              display: block;
+              width: 44px;
+              height: 44px;
+              border-radius: 50%;
+              object-fit: cover;
+              background: #e0e0e0;
+              border: 1px solid $border-color;
+            }
+          }
+
+          .text-container {
+            flex: 1;
+            min-width: 0;
+
+            .text-content {
+              font-size: 14px;
+              line-height: 1.45;
+              word-break: break-word;
+
+              .user-name {
+                font-weight: 600;
+                color: $text-primary;
+              }
+
+              .activity-text {
+                color: $text-primary;
+              }
+
+              .time-stamp {
+                margin-left: 6px;
+                font-size: 12px;
+                color: $text-secondary;
+                white-space: nowrap;
+              }
+            }
+          }
+
+          // ===== Follow request buttons =====
+          .follow-request-actions {
+            @include flex(row, center, flex-end);
+            flex-shrink: 0;
+            gap: 8px;
+
+            button {
+              padding: 7px 16px;
+              border: none;
+              border-radius: 8px;
+              font-size: 13px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: $transition;
+
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+              }
+
+              // Accept
+              &:first-child {
+                background: $primary;
+                color: #fff;
+
+                &:hover:not(:disabled) {
+                  background: $primary-hover;
+                }
+              }
+
+              // Reject
+              &:last-child {
+                background: #efefef;
+                color: $text-primary;
+
+                &:hover:not(:disabled) {
+                  background: #e0e0e0;
+                  color: $danger;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-// Focus state for accessibility (keyboard navigation)
-.notification-row:focus-visible {
-    outline: 2px solid $notif-unread-dot;
-    outline-offset: -2px;
+// ===== Animations =====
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-@media (max-width: 480px) {
-    .notification-row {
-        padding: 10px 12px;
-    }
+// ===== Responsive =====
+@media (max-width: 600px) {
+  .notification-page {
+    .notification-container {
+      padding: 16px 10px 40px;
 
-    .avatar-container .user-avatar {
-        width: 40px;
-        height: 40px;
+      .notification-toast {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        max-width: none;
+      }
+
+      .notification-card-wrapper {
+        .notification-row {
+          padding: 10px 12px;
+
+          .notification-meta {
+            gap: 10px;
+
+            .avatar-container .user-avatar {
+              width: 38px;
+              height: 38px;
+            }
+
+            .follow-request-actions {
+              flex-direction: column;
+              gap: 6px;
+
+              button {
+                padding: 6px 12px;
+                font-size: 12px;
+              }
+            }
+          }
+        }
+      }
     }
+  }
 }

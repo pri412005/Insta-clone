@@ -10,6 +10,7 @@ import {
 import "../feature/shared/style/navbar.scss";
 import { useNotification } from "../feature/notification/hook/useNotification";
 import { socket } from "../socket/socket";
+import { usefollow } from "../feature/follow/hook/usefollow.js";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -18,9 +19,10 @@ const Navbar = () => {
     handleGetUnreadCount
   } = useNotification();
 
+  const {pendingRequests,setPendingRequests} = usefollow()
+
   useEffect(() => {
     handleGetUnreadCount();
-
     socket.on("newNotification", () => {
       handleGetUnreadCount();
     });

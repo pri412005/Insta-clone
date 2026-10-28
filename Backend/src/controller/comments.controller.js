@@ -6,7 +6,6 @@ import notificationModel from "../model/notification.model.js";
 import { io } from "../../server.js";
 
 export const addComment = asyncHandler(async (req, res, next) => {
-    console.log("req.user =", req.user);
     const { text } = req.body;
     const { postId } = req.params;
 

@@ -18,6 +18,8 @@ export const AuthProvider = ({ children }) => {
 
     const [search, setSearch] = useState("")
 
+
+
     return (
 
         <AuthContext.Provider
@@ -42,7 +44,8 @@ export const AuthProvider = ({ children }) => {
                 setSearch,
 
                 profilePosts,
-                setProfilePosts
+                setProfilePosts,
+
 
             }}
         >

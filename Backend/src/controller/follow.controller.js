@@ -7,31 +7,38 @@ import { io } from "../../server.js";
 
 
 export const toggleFollowController = asyncHandler(async (req, res) => {
-
     const follower = req.user.id;
     const followee = req.params.userid;
 
-    // khud ko follow nahi kar sakte
+    // Prevent self-follow
     if (follower === followee) {
         throw new AppError("You cannot follow yourself", 400);
     }
 
-    // user exist karta hai ya nahi
+    // Check whether target user exists
     const userExists = await authModel.findById(followee);
 
     if (!userExists) {
         throw new AppError("User does not exist", 404);
     }
 
-    // already follow hai?
+    // Check existing follow relationship
     const existingFollow = await followModel.findOne({
         follower,
         followee
     });
 
-    // unfollow
     if (existingFollow) {
+        // Pending request ko dobara click karne par preserve karo
+        if (existingFollow.status === "pending") {
+            return res.status(200).json({
+                success: true,
+                type: "request-pending",
+                message: "Follow request is already pending"
+            });
+        }
 
+        // Accepted relationship ko remove karke unfollow karo
         await followModel.findByIdAndDelete(existingFollow._id);
 
         return res.status(200).json({
@@ -41,33 +48,41 @@ export const toggleFollowController = asyncHandler(async (req, res) => {
         });
     }
 
-    // follow
+    // Decide status based on account privacy
+    const status = userExists.isPrivate ? "pending" : "accepted";
+
+    // Create follow relationship
     const follow = await followModel.create({
         follower,
         followee,
-        status: "accepted"
+        status
     });
 
-    await notificationModel.create({
+    // Create appropriate notification
+    const notification = await notificationModel.create({
         sender: follower,
         receiver: followee,
-        type: "follow"
+        type: userExists.isPrivate ? "follow_request" : "follow",
+        followId: follow._id
     });
-    io.to(followee).emit("notification", {
-        type: "follow",
-        sender: follower,
-        message: "started following you"
-    });
-    res.status(201).json({
+    const populatedNotification = await notificationModel
+        .findById(notification._id)
+        .populate("sender", "username profileImage");
+
+    io.to(followee).emit("newNotification", populatedNotification);
+
+    return res.status(201).json({
         success: true,
-        type: "follow",
-        message: "User followed successfully",
+        type: userExists.isPrivate ? "request" : "follow",
+        message: userExists.isPrivate
+            ? "Follow request sent successfully"
+            : "User followed successfully",
         data: follow
     });
-
 });
 export const acceptFollowRequest = asyncHandler(async (req, res) => {
     const followId = req.params.followid;
+
 
     const followRequest = await followModel.findById(followId);
     if (!followRequest) {
@@ -76,7 +91,10 @@ export const acceptFollowRequest = asyncHandler(async (req, res) => {
 
     if (followRequest.followee.toString() !== req.user.id) {
         throw new AppError("You are not allowed to accept this request", 403);
+
     }
+    console.log("Follow ID:", req.params.followid);
+    console.log("Follow document:", followRequest);
     if (followRequest.status === "accepted") {
         throw new AppError("Already accepted", 400);
     }
@@ -142,6 +160,3 @@ export const getFollowStats = asyncHandler(async (req, res) => {
         following
     });
 });
-
-
-

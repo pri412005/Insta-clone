@@ -5,11 +5,9 @@ import "../feature/shared/style/global.scss"
 import { PostContextProvider } from '../feature/post/context/post.context'
 import { NotificationProvider } from '../feature/notification/context/notification.context'
 import { Toaster } from "react-hot-toast"
-
 import { socket } from "../socket/socket"
 import { useAuth } from '../feature/auth/hook/useAuth'
 import { CommentProvider } from '../feature/comments/context/CommentContext'
-import { StoryProvider } from '../feature/story/context/story.context'
 
 const App = () => {
 
@@ -28,9 +26,7 @@ const App = () => {
       <PostContextProvider>
         <NotificationProvider>
           <CommentProvider>
-            <StoryProvider>
               <RouterProvider router={router} />
-            </StoryProvider>
           </CommentProvider>
         </NotificationProvider>
       </PostContextProvider>

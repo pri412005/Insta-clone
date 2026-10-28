@@ -1,40 +1,42 @@
+
 import { validateFields } from "../utils/valiadation";
 import { getErrorMessage } from "../../shared/utils/errorHandler";
 import toast from "react-hot-toast";
 
 export const useFormHandler = (apiFunction, setErrors, setLoading) => {
     return async (fields, onSuccess) => {
+        const validationErrors = validateFields(fields);
 
-        const validationErrors = validateFields(fields)
         if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors)
-            return
+            setErrors(validationErrors);
+            return;
         }
-        try {
-            setLoading?.(true)
-            setErrors({})
 
-            const data = await apiFunction(fields)
-            if (!data) return
+        try {
+            setLoading?.(true);
+            setErrors({});
+
+            const data = await apiFunction(fields);
+
+            if (!data) return;
+
             if (data?.success) {
-                toast.success(data.message || "Success 🎉")
+                toast.success(data.message || "Success 🎉");
             }
 
-            onSuccess && onSuccess(data)
+            onSuccess?.(data);
 
         } catch (error) {
+            const message = getErrorMessage(error);
 
-            if (setErrors) {
-                const message = getErrorMessage(error, errorMessage)
+            setErrors({
+                api: message
+            });
 
-                setErrors({
-                    api: message
-                })
-            }
+            toast.error(message);
 
-            throw error
         } finally {
-            setLoading?.(false)
+            setLoading?.(false);
         }
-    }
-}
+    };
+};

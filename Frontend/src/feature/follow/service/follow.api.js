@@ -29,3 +29,8 @@ export const rejectFollowRequestApi = async (followId) => {
 
     return data;
 };
+export const getPendingRequestsApi = async () => {
+
+    const { data } = await api.get(`/follow/requests`);
+    return data;
+}
